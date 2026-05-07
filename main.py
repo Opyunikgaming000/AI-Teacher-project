@@ -53,8 +53,13 @@ def draw_ship(screen: pygame.Surface, player: pygame.Rect) -> None:
     )
 
 
-def draw_text(screen: pygame.Surface, text: str, size: int, color: tuple[int, int, int], pos: tuple[int, int]) -> None:
-    font = pygame.font.SysFont("arial", size)
+def draw_text(
+    screen: pygame.Surface,
+    font: pygame.font.Font,
+    text: str,
+    color: tuple[int, int, int],
+    pos: tuple[int, int],
+) -> None:
     screen.blit(font.render(text, True, color), pos)
 
 
@@ -63,6 +68,10 @@ def main() -> None:
     screen = pygame.display.set_mode((WIDTH, HEIGHT))
     pygame.display.set_caption("Simple 2D Shooter")
     clock = pygame.time.Clock()
+    score_font = pygame.font.SysFont("arial", 28)
+    instruction_font = pygame.font.SysFont("arial", 22)
+    game_over_font = pygame.font.SysFont("arial", 56)
+    restart_font = pygame.font.SysFont("arial", 32)
 
     state = reset_game_state()
     fire_cooldown = 0
@@ -148,12 +157,18 @@ def main() -> None:
         for enemy, _ in state["enemies"]:
             pygame.draw.rect(screen, (255, 90, 90), enemy)
 
-        draw_text(screen, f"Score: {state['score']}", 28, (255, 255, 255), (12, 10))
-        draw_text(screen, "Move: Arrow Keys/WASD | Shoot: Space", 22, (180, 220, 255), (12, HEIGHT - 34))
+        draw_text(screen, score_font, f"Score: {state['score']}", (255, 255, 255), (12, 10))
+        draw_text(
+            screen,
+            instruction_font,
+            "Move: Arrow Keys/WASD | Shoot: Space",
+            (180, 220, 255),
+            (12, HEIGHT - 34),
+        )
 
         if state["game_over"]:
-            draw_text(screen, "GAME OVER", 56, (255, 120, 120), (WIDTH // 2 - 165, HEIGHT // 2 - 80))
-            draw_text(screen, "Press R to restart", 32, (240, 240, 240), (WIDTH // 2 - 130, HEIGHT // 2 - 20))
+            draw_text(screen, game_over_font, "GAME OVER", (255, 120, 120), (WIDTH // 2 - 165, HEIGHT // 2 - 80))
+            draw_text(screen, restart_font, "Press R to restart", (240, 240, 240), (WIDTH // 2 - 130, HEIGHT // 2 - 20))
 
         pygame.display.flip()
 
