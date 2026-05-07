@@ -110,20 +110,28 @@ def main() -> None:
                     moved_enemies.append((enemy, speed))
             state["enemies"] = moved_enemies
 
+            hit_enemy_indexes = set()
             remaining_bullets = []
             for bullet in state["bullets"]:
                 hit = False
-                kept_enemies = []
-                for enemy, speed in state["enemies"]:
-                    if bullet.colliderect(enemy) and not hit:
+                for index, (enemy, _) in enumerate(state["enemies"]):
+                    if index in hit_enemy_indexes:
+                        continue
+                    if bullet.colliderect(enemy):
                         state["score"] += 1
+                        hit_enemy_indexes.add(index)
                         hit = True
-                    else:
-                        kept_enemies.append((enemy, speed))
-                state["enemies"] = kept_enemies
+                        break
                 if not hit:
                     remaining_bullets.append(bullet)
+
             state["bullets"] = remaining_bullets
+            if hit_enemy_indexes:
+                state["enemies"] = [
+                    enemy_data
+                    for index, enemy_data in enumerate(state["enemies"])
+                    if index not in hit_enemy_indexes
+                ]
 
             for enemy, _ in state["enemies"]:
                 if enemy.colliderect(state["player"]):
